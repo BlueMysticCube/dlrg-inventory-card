@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Box 1",
+    "numer": 401,
+    "format": "euro",
+    "content": [
+      {"name": "Helikopter", "count": 1},
+      {"name": "Ersatzrotorblatt", "count": 2}
+    ]
+  }
+]
