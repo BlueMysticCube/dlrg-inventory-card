@@ -1,0 +1,12 @@
+
+*.pdf
+*.json
+*.csv
+*.xlsx
+*.zip
+
+venv/
+.idea/
+
+**/__pycache__/**
+
