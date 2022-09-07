@@ -1,8 +1,24 @@
 import json
 from fpdf import FPDF
 
+
+def get_format(box_format: str):
+    for subclass in BoxFormat.__subclasses__():
+        if subclass.FORMAT_NAME == box_format:
+            return subclass
+    raise ValueError(f"format '{box_format}' is not implemented or does not exist")
+
+def get_count(count):
+    if isinstance(count, int):
+        return str(count)
+    elif count is None:
+        return ""
+    else:
+        raise ValueError(f"invalid count: {count}")
+
 class BoxFormat:
 
+    FORMAT_NAME = ""
     FORMAT = None
     MAX_LINES = 0
 
@@ -12,6 +28,8 @@ class BoxFormat:
         self.content = content
 
         self.pdf = None
+
+        self.__class__.FORMAT = json.load(open("./formats.json"))[self.__class__.FORMAT_NAME]
 
     def generate(self):
         if len(self.content) > self.MAX_LINES:
@@ -28,8 +46,9 @@ class BoxFormat:
         self.pdf.set_text_color(253, 235, 30)
         self.pdf.add_page()
 
+
 class EuroBox(BoxFormat):
-    FORMAT = json.load(open("./formats.json"))["euro"]
+    FORMAT_NAME = "euro"
     MAX_LINES = 12
 
     def generate(self):
@@ -52,9 +71,9 @@ class EuroBox(BoxFormat):
         self.pdf.set_y(22)
 
         for c in self.content:
-            self.pdf.set_x(15)
-            self.pdf.cell(20, 10, str(c["count"]), align="R")
-            self.pdf.set_x(40)
+            self.pdf.set_x(12)
+            self.pdf.cell(15, 10, get_count(c["count"]), align="R")
+            self.pdf.set_x(30)
             self.pdf.cell(100, 10, c["name"])
 
             self.pdf.set_y(self.pdf.get_y() + 6)
@@ -63,7 +82,7 @@ class EuroBox(BoxFormat):
         self.pdf.output(f"{self.number} {self.name}.pdf", "F")
 
 class NEuroBox(BoxFormat):
-    FORMAT = json.load(open("./formats.json"))["neuro"]
+    FORMAT_NAME = "neuro"
     MAX_LINES = 9
 
     def generate(self):
@@ -88,7 +107,7 @@ class NEuroBox(BoxFormat):
         with self.pdf.unbreakable() as pdf:
             for c in self.content:
                 pdf.set_x(10)
-                pdf.cell(20, 10, str(c["count"]), align="R")
+                pdf.cell(20, 10, get_count(c["count"]), align="R")
                 pdf.set_x(35)
                 pdf.cell(100, 10, c["name"])
 
@@ -98,7 +117,7 @@ class NEuroBox(BoxFormat):
         self.pdf.output(f"{self.number} {self.name}.pdf")
 
 class SmallBox(BoxFormat):
-    FORMAT = json.load(open("./formats.json"))["small"]
+    FORMAT_NAME = "small"
     MAX_LINES = 8
 
     def generate(self):
@@ -125,7 +144,7 @@ class SmallBox(BoxFormat):
         with self.pdf.unbreakable() as pdf:
             for c in self.content:
                 pdf.set_x(5)
-                pdf.cell(15, 7, str(c["count"]), align="R")
+                pdf.cell(15, 7, get_count(c["count"]), align="R")
                 pdf.set_x(20)
                 pdf.cell(100, 7, c["name"])
 
