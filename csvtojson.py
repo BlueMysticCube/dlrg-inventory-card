@@ -26,10 +26,15 @@ with open(file) as f:
                 # if empty
                 continue
             if re.match(r"^[0-9]+\*", item):
-                # count > 1
-                box["content"].append({"name": re.split(r"^[0-9]+\*", item, 1)[1], "count": int(item.split("*")[0])})
+                # count is given
+                box["content"].append(
+                    {
+                        "name": re.split(r"^[0-9]+\*", item, 1)[1].strip(),
+                        "count": int(item.split("*")[0].strip())
+                    }
+                )
             else:
-                box["content"].append({"name": item, "count": 1})
+                box["content"].append({"name": item, "count": None})
 
         boxes.append(box)
 
